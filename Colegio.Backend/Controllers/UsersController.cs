@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using Colegio.Backend.Models;
 using Colegio.Common.Models;
+using Colegio.Backend.Helpers;
 
 namespace Colegio.Backend.Controllers
 {
@@ -48,16 +49,43 @@ namespace Colegio.Backend.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "UserId,UserName,FirstName,LastName,FullName,Phone,Address,Photo,IsStudent,IsTeacher")] Users users)
+        public async Task<ActionResult> Create(UserView view)
         {
             if (ModelState.IsValid)
             {
-                db.Users.Add(users);
+                var pic = string.Empty;
+                var folder = "~/Content/User";
+
+                if (view.PhotoFile != null)
+                {
+                    pic = FileHelper.UploadPhoto(view.PhotoFile, folder);
+                    pic = $"{folder}/{pic}";
+                }
+
+                var user = this.ToUser(view, pic);
+
+                db.Users.Add(user);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
+               
             }
 
-            return View(users);
+            return View(view);
+        }
+
+        private Users ToUser(UserView view, string pic)
+        {
+            return new Users
+            {
+                UserName = view.UserName,
+                FirstName = view.FirstName,
+                LastName = view.LastName,
+                Phone = view.Phone,
+                Address = view.Address,
+                Photo = pic,
+                IsStudent = view.IsStudent,
+                IsTeacher = view.IsTeacher,
+            };
         }
 
         // GET: Users/Edit/5
@@ -72,7 +100,27 @@ namespace Colegio.Backend.Controllers
             {
                 return HttpNotFound();
             }
-            return View(users);
+
+            var view = this.ToView(users);
+            return View(view);
+        }
+
+        private UserView ToView(Users users)
+        {
+            return new UserView
+            {
+                
+                UserName = users.UserName,
+                FirstName = users.FirstName,
+                LastName = users.LastName,
+                Phone = users.Phone,
+                Address = users.Address,
+                Photo = users.Photo,
+                IsStudent = users.IsStudent,
+                IsTeacher = users.IsTeacher, 
+
+                
+            };
         }
 
         // POST: Users/Edit/5
@@ -80,15 +128,24 @@ namespace Colegio.Backend.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "UserId,UserName,FirstName,LastName,FullName,Phone,Address,Photo,IsStudent,IsTeacher")] Users users)
+        public async Task<ActionResult> Edit(UserView view)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(users).State = EntityState.Modified;
+                var pic = string.Empty;
+                var folder = "~/Content/User";
+
+                if (view.PhotoFile != null)
+                {
+                    pic = FileHelper.UploadPhoto(view.PhotoFile, folder);
+                    pic = $"{folder}/{pic}";
+                }
+
+                db.Entry(view).State = EntityState.Modified;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View(users);
+            return View(view);
         }
 
         // GET: Users/Delete/5

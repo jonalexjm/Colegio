@@ -6,16 +6,19 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    //using System.ComponentModel.DataAnnotations;
+    
 
     public class Users
     {
         [Key]
         public int UserId { get; set; }
 
-        [Required]
+
+        [Display(Name ="E-Mail")]
+        [Required(ErrorMessage = "The field {0} is required")]
         [StringLength(50)]//only you can to write 50 characters
         [DataType(DataType.EmailAddress)]
+       // [Index("UserNameIndex", Isnique = true)]
         public string UserName { get; set; }
 
 
@@ -26,7 +29,10 @@
         public string LastName { get; set; }
 
         [Display(Name = "Full Name")]
-        public string FullName { get; set; }
+        public string FullName
+        {
+            get { return string.Format("{0} {1}", this.FirstName, this.LastName); }
+        }
 
         [Display(Name = "Phone")]
         public string Phone { get; set; }

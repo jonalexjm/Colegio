@@ -14,6 +14,6 @@ namespace Colegio.Domain.Models
 
         }
 
-        
+        public System.Data.Entity.DbSet<Colegio.Common.Models.Users> Users { get; set; }
     }
 }
