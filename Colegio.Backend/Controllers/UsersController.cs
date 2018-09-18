@@ -66,6 +66,18 @@ namespace Colegio.Backend.Controllers
 
                 db.Users.Add(user);
                 await db.SaveChangesAsync();
+
+                Helpers.Utilities.CreateUserASP(view.UserName);
+                if (view.IsStudent)
+                {
+                    Utilities.AddRoleToUser(view.UserName, "Student");
+                }
+                if (view.IsTeacher)
+                {
+                    Utilities.AddRoleToUser(view.UserName, "Teacher");
+                }
+
+
                 return RedirectToAction("Index");
                
             }

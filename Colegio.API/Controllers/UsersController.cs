@@ -9,13 +9,61 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Colegio.API.Models;
 using Colegio.Common.Models;
 using Colegio.Domain.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Newtonsoft.Json.Linq;
 
 namespace Colegio.API.Controllers
 {
+    [RoutePrefix ("API/Users")]
+
     public class UsersController : ApiController
     {
+        
+        [HttpPost]//empieza codigo
+        [Route("Login")]
+        public IHttpActionResult Longin(JObject form)
+        {
+            string email = string.Empty;
+            string password = string.Empty;
+            dynamic jsonObject = form;
+
+            try
+            {
+                email = jsonObject.Email.Value;
+                password = jsonObject.password.Value;
+            }
+            catch (Exception)
+            {
+
+                return this.BadRequest("Incorrect Call");
+            }
+
+            var userContext = new ApplicationDbContext();
+            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+            var userASP = userManager.Find(email, password);
+
+            if(userASP == null)
+            {
+                return this.BadRequest("user or password wrong");
+            }
+
+            var user = db.Users.Where(u => u.UserName == email).FirstOrDefault();
+
+            if (user == null)
+            {
+                return this.BadRequest("user o pasword wrong");
+            }
+
+            return this.Ok(user);
+
+        }
+        //termina codigo login
+
+
         private DataContext db = new DataContext();
 
         // GET: api/Users

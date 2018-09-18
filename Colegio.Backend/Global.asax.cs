@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Colegio.Backend.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,13 +14,20 @@ namespace Colegio.Backend
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
+            this.CheckRoles();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
 
+        private void CheckRoles()
+        {
+            Utilities.checkRole("Admin");
+            Utilities.checkRole("Student");
+            Utilities.checkRole("Teacher");
+        }
 
-        private void 
+        
 
 
     }
